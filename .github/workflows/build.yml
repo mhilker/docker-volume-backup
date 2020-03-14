@@ -12,8 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Run tests
+        run: go test ./...
+
       - name: Build
         run: go build -o build/docker-volume-backup ./cmd/docker-volume-backup/main.go
 
-      - name: Run
+      - name: Run backup
         run: ./build/docker-volume-backup

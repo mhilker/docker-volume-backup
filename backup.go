@@ -1,4 +1,4 @@
-package docker_volume_backup
+package dockervolumebackup
 
 import (
 	"os"

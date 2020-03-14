@@ -4,34 +4,19 @@ import (
 	"archive/tar"
 	"compress/gzip"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
-func ListFilesInDirectory(directory string) map[string]os.FileInfo {
-	infos := make(map[string]os.FileInfo, 0)
-
-	err := filepath.Walk(directory, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		infos[path] = info
-		return nil
-	})
-
+func CreateArchive(sourcePath string) (string, error) {
+	file, err := ioutil.TempFile(os.TempDir(), "temp")
 	if err != nil {
-		log.Println(err)
+		return "", err
 	}
-
-	return infos
-}
-
-func CreateArchive(sourcePath string, outputPath string) (*os.File, error) {
-	file, err := os.Create(outputPath)
-	if err != nil {
-		return nil, err
-	}
+	defer file.Close()
 
 	gzipWriter := gzip.NewWriter(file)
 	defer gzipWriter.Close()
@@ -39,25 +24,27 @@ func CreateArchive(sourcePath string, outputPath string) (*os.File, error) {
 	tarWriter := tar.NewWriter(gzipWriter)
 	defer tarWriter.Close()
 
-	err = filepath.Walk(sourcePath, func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk(sourcePath, func(localPath string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 		if info.IsDir() {
 			return nil
 		}
-		return addFileToArchive(path, tarWriter)
+		archivePath := strings.TrimPrefix(localPath, sourcePath)
+		log.Println("Adding file", localPath, archivePath)
+		return addFileToArchive(localPath, archivePath, tarWriter)
 	})
 
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	return file, nil
+	return file.Name(), nil
 }
 
-func addFileToArchive(filePath string, tarWriter *tar.Writer) error {
-	file, err := os.Open(filePath)
+func addFileToArchive(localPath string, archivePath string, tarWriter *tar.Writer) error {
+	file, err := os.Open(localPath)
 	if err != nil {
 		return err
 	}
@@ -69,7 +56,7 @@ func addFileToArchive(filePath string, tarWriter *tar.Writer) error {
 	}
 
 	header := &tar.Header{
-		Name:    filePath,
+		Name:    archivePath,
 		Size:    stat.Size(),
 		Mode:    int64(stat.Mode()),
 		ModTime: stat.ModTime(),

@@ -15,11 +15,6 @@ func main() {
 	bucket := os.Getenv("AWS_BUCKET")
 	now := time.Now().UTC().Format(time.RFC3339)
 
-	log.Println(id)
-	log.Println(secret)
-	log.Println(region)
-	log.Println(bucket)
-
 	backup := dockervolumebackup.NewBackup(id, secret, region)
 
 	provider, err := dockervolumebackup.NewProvider()
@@ -33,18 +28,17 @@ func main() {
 	}
 
 	for _, dir := range dirs {
-		filename := dir.Name + ".tar.gz" 
-		file, err := dockervolumebackup.CreateArchive(dir.Path, filename)
+		file, err := dockervolumebackup.CreateArchive(dir.Path)
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer file.Close()
+		defer os.Remove(file)
 
-		key := now + "/" + filename
+		key := dir.Name + "/" + now + ".tar.gz"
 		path, err := backup.UploadFile(bucket, key, file)
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Println(path)
+		log.Println("Uploaded archive to " + path)
 	}
 }

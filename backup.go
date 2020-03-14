@@ -11,7 +11,6 @@ import (
 
 type Backup struct {
 	uploader *s3manager.Uploader
-	region   string
 }
 
 func NewBackup(id string, secret string, region string) *Backup {
@@ -26,7 +25,12 @@ func NewBackup(id string, secret string, region string) *Backup {
 	}
 }
 
-func (b *Backup) UploadFile(bucket string, key string, file *os.File) (string, error) {
+func (b *Backup) UploadFile(bucket string, key string, path string) (string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return "", err
+	}
+
 	result, err := b.uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(key),

@@ -1,6 +1,8 @@
 # Docker Volume Backup
 
-This tool creates .tar.gz archives from an volume with the label `com.github.mhilker.docker-volume-backup` and uploads it to AWS S3.
+[![build](https://github.com/mhilker/docker-volume-backup/workflows/build/badge.svg)](https://github.com/mhilker/docker-volume-backup/actions)
+
+This tool creates .tar.gz archives from an volume with the label `com.github.mhilker.docker-volume-backup` and uploads them to AWS S3.
 
 ## Example
 

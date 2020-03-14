@@ -22,7 +22,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	dirs, err := provider.GetDirectories("com.github.mhilker.docker-volume-backup")
+	dirs, err := provider.GetVolumesWithLabel("com.github.mhilker.docker-volume-backup")
 	if err != nil {
 		log.Fatal(err)
 	}

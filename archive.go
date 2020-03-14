@@ -11,6 +11,7 @@ import (
 	"strings"
 )
 
+// CreateArchive creats a new archive in the temp dir and adds all files from sourcePath to it
 func CreateArchive(sourcePath string) (string, error) {
 	file, err := ioutil.TempFile(os.TempDir(), "temp")
 	if err != nil {

@@ -7,15 +7,18 @@ import (
 	"github.com/docker/docker/client"
 )
 
+// DockerProvider contains methods to find volumes to backup
 type DockerProvider struct {
 	client *client.Client
 }
 
-type BackupDirectory struct {
+// Volume represents a docker volume to backup
+type Volume struct {
 	Name string
 	Path string
 }
 
+// NewProvider creates a new provider
 func NewProvider() (*DockerProvider, error) {
 	cli, err := client.NewEnvClient()
 	if err != nil {
@@ -27,7 +30,8 @@ func NewProvider() (*DockerProvider, error) {
 	}, nil
 }
 
-func (p *DockerProvider) GetDirectories(label string) ([]BackupDirectory, error) {
+// GetVolumesWithLabel returns a list of all docker volumes with the given label
+func (p *DockerProvider) GetVolumesWithLabel(label string) ([]Volume, error) {
 	args := filters.NewArgs()
 	args.Add("label", label)
 
@@ -37,9 +41,9 @@ func (p *DockerProvider) GetDirectories(label string) ([]BackupDirectory, error)
 		return nil, err
 	}
 
-	dirs := make([]BackupDirectory, 0)
+	dirs := make([]Volume, 0)
 	for _, v := range response.Volumes {
-		dirs = append(dirs, BackupDirectory{
+		dirs = append(dirs, Volume{
 			Name: v.Name,
 			Path: v.Mountpoint,
 		})

@@ -1,0 +1,19 @@
+name: build
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build
+        run: go build -o build/docker-volume-backup ./cmd/docker-volume-backup/main.go
+
+      - name: Run
+        run: ./build/docker-volume-backup

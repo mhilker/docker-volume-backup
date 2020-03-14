@@ -4,12 +4,18 @@ import (
 	"context"
 
 	"github.com/docker/docker/api/types/filters"
+	"github.com/docker/docker/api/types/volume"
 	"github.com/docker/docker/client"
 )
 
-// DockerProvider contains methods to find volumes to backup
-type DockerProvider struct {
-	client *client.Client
+// Provider contains methods to find volumes to backup
+type Provider struct {
+	client ProviderClient
+}
+
+// ProviderClient provides a list of Volumes to backup
+type ProviderClient interface {
+	VolumeList(ctx context.Context, filter filters.Args) (volume.VolumesListOKBody, error)
 }
 
 // Volume represents a docker volume to backup
@@ -18,20 +24,20 @@ type Volume struct {
 	Path string
 }
 
-// NewProvider creates a new provider
-func NewProvider() (*DockerProvider, error) {
-	cli, err := client.NewEnvClient()
-	if err != nil {
-		return nil, err
-	}
+// NewDockerProviderClient creates a docker api client
+func NewDockerProviderClient() (ProviderClient, error) {
+	return client.NewEnvClient()
+}
 
-	return &DockerProvider{
+// NewProvider creates a new provider
+func NewProvider(cli ProviderClient) (*Provider, error) {
+	return &Provider{
 		client: cli,
 	}, nil
 }
 
 // GetVolumesWithLabel returns a list of all docker volumes with the given label
-func (p *DockerProvider) GetVolumesWithLabel(label string) ([]Volume, error) {
+func (p *Provider) GetVolumesWithLabel(label string) ([]Volume, error) {
 	args := filters.NewArgs()
 	args.Add("label", label)
 

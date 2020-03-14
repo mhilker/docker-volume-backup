@@ -11,6 +11,7 @@ require (
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/mhilker/cspr-collector v0.0.0-20190928120704-d117b1458bba // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
+	github.com/stretchr/testify v1.5.1
 	golang.org/x/tools v0.0.0-20200313205530-4303120df7d8 // indirect
 	golang.org/x/tools/gopls v0.1.8-0.20200313205530-4303120df7d8 // indirect
 )

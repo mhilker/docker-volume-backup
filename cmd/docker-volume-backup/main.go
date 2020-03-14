@@ -17,7 +17,12 @@ func main() {
 
 	backup := dockervolumebackup.NewBackup(id, secret, region)
 
-	provider, err := dockervolumebackup.NewProvider()
+	providerClient, err := dockervolumebackup.NewDockerProviderClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	provider, err := dockervolumebackup.NewProvider(providerClient)
 	if err != nil {
 		log.Fatal(err)
 	}

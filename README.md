@@ -10,8 +10,8 @@ This tool creates .tar.gz archives from an volume with the label `com.github.mhi
 
 Create a new docker volume:
 
-``` bash
-docker volume create --label com.github.mhilker.docker-volume-backup my-test-volume
+```bash
+docker volume create --label "com.github.mhilker.docker-volume-backup" my-test-volume
 ```
 
 Create some files in the volume:
